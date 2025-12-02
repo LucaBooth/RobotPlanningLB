@@ -52,7 +52,7 @@ int main()
     printf("Loading font data now:\n");
     loadFont("SingleStrokeFont.txt", fontLibrary);
     scaleFactor = ScalingFactor();
-    // processtext(scaleFactor, "text.txt", fontLibrary);    
+    processText(scaleFactor, "text.txt", fontLibrary);    
 
 
     // Before we exit the program we need to close the COM port
@@ -62,13 +62,12 @@ int main()
     return (0);
 }
 
-
 void SendCommands(char *buffer )
 {
     // printf ("Buffer to send: %s", buffer); // For diagnostic purposes only, normally comment out
     PrintBuffer (&buffer[0]);
     WaitForReply();
-    Sleep(100); // Can omit this when using the writing robot but has minimal effect
+    //Sleep(100); // Can omit this when using the writing robot but has minimal effect
     // getch(); // Omit this once basic testing with emulator has taken place
 }
 
@@ -197,16 +196,23 @@ void processText(double scaleFactor, const char* textFile, fontData fontLibrary[
             posX =0;
             posY =0; // return home
             }
-        else wordBuffer[bufferTracker]= (char)c; // add char to buffer
+            else{
+
+             wordBuffer[bufferTracker]= (char)c; // add char to buffer
         bufferTracker++;
+            }
     }
 }
+
 fclose(file);
+        
 }
 }
 
+
 // word width
-float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor) {
+float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor)
+ { 
     float totalwordWidth =0;
     int i=0; // letter tracker  for loop
     
@@ -251,3 +257,4 @@ void drawCharacter(char c, const fontData fontLibrary[128], double scale, double
         *xOffset += (charEndWidth * scale);
     }
 }
+
