@@ -13,7 +13,7 @@ typedef struct {
 } fontData;
 
 //functions to be called
-void loadFont(const char* fileName, struct fontData fontLibrary[128]);
+void loadFont(const char* fileName, fontData fontLibrary[128]);
 double ScalingFactor(void);
 void processText(double scaleFactor, const char*textFile, fontData fontLibrary[128]);
 float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor);
@@ -21,8 +21,7 @@ void initRobot(int* lastPenState);
 void penState(int* lastPenState, int newPenState);
 void returnHome(int* lasPenState);
 void move(float x, float y, int penState);
-void goCommand(char *buffer);
-
+void drawCharacter(char c, const fontData fontLibrary[128], double scale, double* xOffset, double* yOffset, int* lastPenState);
 void SendCommands (char *buffer );
 
 int main()
@@ -64,7 +63,7 @@ int main()
 }
 
 
-void goCommand(char *buffer )
+void SendCommands(char *buffer )
 {
     // printf ("Buffer to send: %s", buffer); // For diagnostic purposes only, normally comment out
     PrintBuffer (&buffer[0]);
@@ -77,9 +76,9 @@ void goCommand(char *buffer )
 void initRobot(int* lastPenState)
  {
     char buffer[100];
-    sprintf(buffer, "F1000\n"); goCommand(buffer); // feed rate
-    sprintf(buffer, "M3\n");    goCommand(buffer); // spindle on
-    sprintf(buffer, "S0\n");    goCommand(buffer); // pen start up
+    sprintf(buffer, "F1000\n"); SendCommands(buffer); // feed rate
+    sprintf(buffer, "M3\n");    SendCommands(buffer); // spindle on
+    sprintf(buffer, "S0\n");    SendCommands(buffer); // pen start up
     *lastPenState = 0; // states -> up
 }
 
@@ -175,10 +174,10 @@ void processText(double scaleFactor, const char* textFile, fontData fontLibrary[
         if (c ==' '|| c =='\n'|| c =='\r'|| c ==EOF){
             if (bufferTracker >0){
                 wordBuffer[bufferTracker]  = '\0'; // terminate 
-                float totalWordWidth = wordWidth(wordBuffer, fontLibrary, scaleFactor, &posX, &posY, &lastPenState); 
-                if (posX + wordWidth >100){ // check if this is right
+                float totalWordWidth = wordWidth(wordBuffer, fontLibrary, scaleFactor); 
+                if (posX + totalWordWidth >100){
                     posX =0; // reset to start of line
-                    posY -= 5  // move down a line
+                    posY -= 5;  // move down a line
                 }
             for (int i=0; i<bufferTracker; i++){
             drawCharacter(wordBuffer[i], fontLibrary, scaleFactor, &posX, &posY, &lastPenState);
@@ -194,7 +193,7 @@ void processText(double scaleFactor, const char* textFile, fontData fontLibrary[
             posX =0; // new line and and posX reset
             posY -=5;
             }
-            else if (c =='r'){
+            else if (c =='\r'){
             posX =0;
             posY =0; // return home
             }
