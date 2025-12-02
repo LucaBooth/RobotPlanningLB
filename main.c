@@ -118,7 +118,7 @@ double ScalingFactor(void) {
     
     do {
         printf("Enter font height (4-10 mm): ");
-        scanf("%f", &height);
+        scanf(" %f", &height);
         if (height >= 4.0 && height <= 10.0) {
             valid = 1;
         } else {
