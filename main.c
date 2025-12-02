@@ -206,7 +206,7 @@ fclose(file);
 }
 
 // word width
-float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor, double* xOff, double* yOff, int* lastPenState) {
+float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor) {
     float totalwordWidth =0;
     int i=0; // letter tracker  for loop
     
