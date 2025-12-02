@@ -35,13 +35,13 @@ int main()
     // port check
     if ( CanRS232PortBeOpened() == -1 )
     {
-        printf ("\nUnable to open the COM port (specified in serial.h) ");
+        printf("\nUnable to open the COM port (specified in serial.h)");
         exit (0);
     }
 
     // Time to wake up the robot
     printf ("\nAbout to wake up the robot\n");
-    sprintf (buffer, "\n");
+    //sprintf (buffer, "\n");
     PrintBuffer (&buffer[0]);
     Sleep(100);
     WaitForDollar();
@@ -64,11 +64,11 @@ int main()
 
 void SendCommands(char *buffer )
 {
-    // printf ("Buffer to send: %s", buffer); // For diagnostic purposes only, normally comment out
+    printf ("Buffer to send: %s", buffer); // For diagnostic purposes only, normally comment out
     PrintBuffer (&buffer[0]);
     WaitForReply();
     //Sleep(100); // Can omit this when using the writing robot but has minimal effect
-    // getch(); // Omit this once basic testing with emulator has taken place
+    //getch(); // Omit this once basic testing with emulator has taken place
 }
 
 //robot initialization
@@ -143,7 +143,7 @@ void penState(int* lastPenState, int newPenState) {
 void move(float x, float y, int penState) {
     char buffer[100];
     if (penState == 1) sprintf(buffer, "G1 X%.2f Y%.2f\n", x, y);
-    else sprintf(buffer, "G0 X%.2f Y%.2f\n", x, y);
+    else sprintf(buffer, "G0 X%.2f Y%.2f \n", x, y);
     SendCommands(buffer);
 }
 
@@ -179,8 +179,8 @@ void processText(double scaleFactor, const char* textFile, fontData fontLibrary[
                     posY -= 5;  // move down a line
                 }
             for (int i=0; i<bufferTracker; i++){
-            drawCharacter(wordBuffer[i], fontLibrary, scaleFactor, &posX, &posY, &lastPenState);
-         }
+                drawCharacter(wordBuffer[i], fontLibrary, scaleFactor, &posX, &posY, &lastPenState);
+            }
             bufferTracker =0; 
             if (c==EOF){ // end of file
                 break;
@@ -189,30 +189,32 @@ void processText(double scaleFactor, const char* textFile, fontData fontLibrary[
                 drawCharacter(' ', fontLibrary, scaleFactor, &posX, &posY, &lastPenState);
             }
             else if (c =='\n'){
-            posX =0; // new line and and posX reset
-            posY -=5;
+                posX =0; // new line and and posX reset
+                posY -=5;
             }
             else if (c =='\r'){
-            posX =0;
-            posY =0; // return home
+                posX =0;
+                posY =0; // return home
             }
             else{
 
-             wordBuffer[bufferTracker]= (char)c; // add char to buffer
-        bufferTracker++;
+                wordBuffer[bufferTracker]= (char)c; // add char to buffer
+                bufferTracker++;
+                
             }
-    }
+        }
+}   
 }
-
+returnHome(&lastPenState); 
+ printf("Returned home\n");
 fclose(file);
         
 }
-}
+
 
 
 // word width
-float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor)
- { 
+float wordWidth(const char* c, const fontData fontLibrary[128], double scaleFactor){ 
     float totalwordWidth =0;
     int i=0; // letter tracker  for loop
     
@@ -256,5 +258,8 @@ void drawCharacter(char c, const fontData fontLibrary[128], double scale, double
         float charEndWidth = fontLibrary[ascii].moves[lastIndex][0];
         *xOffset += (charEndWidth * scale);
     }
+    sprintf(&c,"Drew character:%c\n");
 }
+    
+
 
